@@ -72,9 +72,9 @@ class NewMessageHandler(BaseHandler):
         context = self.get_common_context("main-url")
         current_user = context["user"]
 
-        subject = self.request.get("subject")
+        subject = unicode(self.request.get("subject"))
         to = self.request.get("to")
-        content = self.request.get("content")
+        content = unicode(self.request.get("content"))
         important = self.request.get("important")
 
         if to and content:
@@ -100,7 +100,18 @@ class NewMessageHandler(BaseHandler):
         return self.render_template("new-message.html", params=context)
 
 
+class InboxHandler(BaseHandler):
+    def get(self):
+        context = self.get_common_context("main-url")
+
+        current_user = context["user"]
+        context["messages"] = Message.query(Message.receiver == current_user.user_id()).fetch()
+
+        return self.render_template("inbox.html", params=context)
+
+
 app = webapp2.WSGIApplication([
     webapp2.Route('/', MainHandler, name="main-url"),
     webapp2.Route('/new-message', NewMessageHandler, name="new-message-url"),
+    webapp2.Route('/inbox', InboxHandler, name="inbox-url"),
 ], debug=True)

@@ -10,3 +10,9 @@ body {
   right: 5px;
   left: auto;
 }
+
+.message-date {
+  position: absolute;
+  right: 25px;
+  top: 25px;
+}

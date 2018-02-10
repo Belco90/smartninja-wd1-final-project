@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block extra_title %}Inbox | {% endblock extra_title %}
+
+{% block main_content %}
+
+<h1>Inbox</h1>
+
+<hr>
+
+<div id="accordion">
+  {% for message in messages %}
+
+    <div class="card">
+      <div class="card-header" id="heading{{ message.key.id() }}">
+        <h5 class="mb-0">
+          <button class="btn btn-link" data-toggle="collapse" data-target="#collapse{{ message.key.id() }}" aria-expanded="true" aria-controls="collapse{{ message.key.id() }}">
+            {% if message.subject %}{{ message.subject }}{% else %}(no subject){% endif %}
+          </button>
+
+          <small class="message-date">{{ message.created }}</small>
+        </h5>
+      </div>
+
+      <div id="collapse{{ message.key.id() }}" class="collapse" aria-labelledby="heading{{ message.key.id() }}" data-parent="#accordion">
+        <div class="card-body">
+          {{ message.body }}
+        </div>
+      </div>
+    </div>
+
+  {% else %}
+  <div class="alert alert-info" role="alert">
+    No messages found :(
+  </div>
+  {% endfor %}
+</div>
+
+{% endblock main_content %}

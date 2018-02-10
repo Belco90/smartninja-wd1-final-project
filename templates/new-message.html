@@ -30,7 +30,7 @@
       <div class="form-group col-md-3">
         <label for="inputTo">To</label> <span class="text-danger">*</span>
         <select id="inputTo" name="to" class="form-control" required>
-          <option value=""></option>
+          <option value="">Choose one user</option>
           {% for receiver in receivers %}
           <option value="{{ receiver.user_id }}" {% if to == receiver.user_id %}selected{% endif %}>{{ receiver.nickname }}</option>
           {% endfor %}
