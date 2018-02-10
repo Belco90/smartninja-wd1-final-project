@@ -110,8 +110,19 @@ class InboxHandler(BaseHandler):
         return self.render_template("inbox.html", params=context)
 
 
+class SentHandler(BaseHandler):
+    def get(self):
+        context = self.get_common_context("main-url")
+
+        current_user = context["user"]
+        context["messages"] = Message.query(Message.sender == current_user.user_id()).fetch()
+
+        return self.render_template("sent.html", params=context)
+
+
 app = webapp2.WSGIApplication([
     webapp2.Route('/', MainHandler, name="main-url"),
     webapp2.Route('/new-message', NewMessageHandler, name="new-message-url"),
     webapp2.Route('/inbox', InboxHandler, name="inbox-url"),
+    webapp2.Route('/sent', SentHandler, name="sent-url"),
 ], debug=True)
