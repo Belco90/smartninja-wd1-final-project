@@ -12,22 +12,23 @@
 <body>
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
-  <a class="navbar-brand" href="/">Bmail</a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
-          aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
+  <div class="container">
+    <a class="navbar-brand" href="/">Bmail</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+            aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
 
-  <div class="collapse navbar-collapse" id="navbarSupportedContent">
-    {% if logged_in %}
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      {% if logged_in %}
       <ul class="navbar-nav mr-auto">
-        <li class="nav-item {% if active_tab == 'new-message' %}active{% endif %}">
+        <li class="nav-item {% if path == '/new-message' %}active{% endif %}">
           <a class="nav-link" href="/new-message">New message</a>
         </li>
-        <li class="nav-item {% if active_tab == 'inbox' %}active{% endif %}">
+        <li class="nav-item {% if path == '/inbox' %}active{% endif %}">
           <a class="nav-link" href="/inbox">Inbox</a>
         </li>
-        <li class="nav-item {% if active_tab == 'sent' %}active{% endif %}">
+        <li class="nav-item {% if path == '/sent' %}active{% endif %}">
           <a class="nav-link" href="/sent">Sent</a>
         </li>
       </ul>
@@ -43,16 +44,36 @@
           </div>
         </li>
       </ul>
-    {% endif %}
+      {% endif %}
+    </div>
   </div>
 </nav>
 
-<div class="container-fluid">
+<div class="container">
   {% block main_content %}{% endblock main_content %}
 </div>
 
 <script src="/assets/js/jquery-3.3.1.min.js"></script>
 <script src="/assets/js/popper.min.js"></script>
 <script src="/assets/js/bootstrap.bundle.min.js"></script>
+
+<script>
+  (function () {
+    'use strict';
+    window.addEventListener('load', function () {
+      var forms = document.getElementsByClassName('needs-validation');
+      var validation = Array.prototype.filter.call(forms, function (form) {
+        form.addEventListener('submit', function (event) {
+          if (form.checkValidity() === false) {
+            event.preventDefault();
+            event.stopPropagation();
+          }
+          form.classList.add('was-validated');
+        }, false);
+      });
+    }, false);
+  })();
+</script>
+
 </body>
 </html>
