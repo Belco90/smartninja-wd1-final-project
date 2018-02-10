@@ -3,7 +3,7 @@ import os
 import jinja2
 import webapp2
 from google.appengine.api import users
-from models import Message
+from models import Message, User
 
 template_dir = os.path.join(os.path.dirname(__file__), "templates")
 jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir), autoescape=False)
@@ -23,6 +23,7 @@ class BaseHandler(webapp2.RequestHandler):
 
         elif not redirect_to_name:
             return {
+                "user": current_user,
                 "logged_in": False,
                 "login_url": users.create_login_url('/'),
             }
@@ -50,6 +51,12 @@ class BaseHandler(webapp2.RequestHandler):
 class MainHandler(BaseHandler):
     def get(self):
         context = self.get_common_context()
+        current_user = context["user"]
+        if current_user:
+            user_db = User.get_by_user(current_user)
+            if not user_db:
+                new_user_db = User(user_id=current_user.user_id(), nickname=current_user.nickname())
+                new_user_db.put()
 
         return self.render_template("main.html", params=context)
 
@@ -57,11 +64,13 @@ class MainHandler(BaseHandler):
 class NewMessageHandler(BaseHandler):
     def get(self):
         context = self.get_common_context("main-url")
+        context["receivers"] = User.query().fetch()
 
         return self.render_template("new-message.html", params=context)
 
     def post(self):
         context = self.get_common_context("main-url")
+        current_user = context["user"]
 
         subject = self.request.get("subject")
         to = self.request.get("to")
@@ -72,7 +81,7 @@ class NewMessageHandler(BaseHandler):
             new_message = Message(
                 subject=subject,
                 body=content,
-                sender=context["user"].user_id(),
+                sender=current_user.user_id(),
                 receiver=to,
                 important=bool(important),
             )
@@ -82,6 +91,7 @@ class NewMessageHandler(BaseHandler):
 
         else:
             context["error_message"] = "Please fill all required inputs"
+            context["receivers"] = User.query().fetch()
             context["subject"] = subject
             context["to"] = to
             context["content"] = content
