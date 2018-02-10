@@ -1,5 +1,15 @@
 {% extends "base.html" %}
 
 {% block main_content %}
-<h1>Main</h1>
+
+  {% if logged_in %}
+    <h1 class="text-center main-header">Welcome to Bmail, {{ user.nickname() }}</h1>
+  {% else %}
+    <h1 class="text-center main-header mb-5">Welcome to Bmail, Anonymous</h1>
+
+    <p class="text-center">
+      <a href="{{ login_url }}" class="btn btn-outline-primary btn-lg">Login</a>
+    </p>
+  {% endif %}
+
 {% endblock main_content %}

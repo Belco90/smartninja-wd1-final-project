@@ -1,3 +1,12 @@
 body {
   margin-top: 61px;
 }
+
+.main-header {
+  padding-top: 50px;
+}
+
+.dropdown-menu-right {
+  right: 5px;
+  left: auto;
+}

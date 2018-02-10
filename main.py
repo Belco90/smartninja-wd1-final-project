@@ -2,6 +2,7 @@
 import os
 import jinja2
 import webapp2
+from google.appengine.api import users
 
 template_dir = os.path.join(os.path.dirname(__file__), "templates")
 jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir), autoescape=False)
@@ -28,9 +29,23 @@ class BaseHandler(webapp2.RequestHandler):
 
 class MainHandler(BaseHandler):
     def get(self):
-        return self.render_template("main.html")
+        current_user = users.get_current_user()
+        if current_user:
+            context = {
+                "user": current_user,
+                "logged_in": True,
+                "logout_url": users.create_logout_url('/'),
+            }
+
+        else:
+            context = {
+                "logged_in": False,
+                "login_url": users.create_login_url('/'),
+            }
+
+        return self.render_template("main.html", params=context)
 
 
 app = webapp2.WSGIApplication([
-    webapp2.Route('/', MainHandler),
+    webapp2.Route('/', MainHandler, name="main-url"),
 ], debug=True)
