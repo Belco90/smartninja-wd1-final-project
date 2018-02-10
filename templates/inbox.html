@@ -16,7 +16,7 @@
         <h5 class="mb-0">
           <button class="btn btn-link" data-toggle="collapse" data-target="#collapse{{ message.key.id() }}" aria-expanded="true" aria-controls="collapse{{ message.key.id() }}">
             {% if message.important %}!!! {% endif %}
-            To: {{ message.get_sender_nickname() }} -
+            From: {{ message.get_sender_nickname() }} -
             {% if message.subject %}{{ message.subject }}{% else %}(no subject){% endif %}
           </button>
         </h5>
