@@ -2,11 +2,24 @@
 import os
 import jinja2
 import webapp2
-from google.appengine.api import users
+import json
+from google.appengine.api import urlfetch, users
 from models import Message, User
 
 template_dir = os.path.join(os.path.dirname(__file__), "templates")
 jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir), autoescape=False)
+
+
+def get_weather_info(location):
+    url = "http://api.openweathermap.org/data/2.5/weather?q={}&units=metric&appid=db8b1ce1eaccb7d82980f5c1144e2eec".format(location)
+    response = urlfetch.fetch(url)
+    data = response.content
+    weather_info = json.loads(data)
+
+    if weather_info and str(weather_info["cod"]) == "200":
+        return weather_info
+
+    return None
 
 
 class BaseHandler(webapp2.RequestHandler):
@@ -120,9 +133,24 @@ class SentHandler(BaseHandler):
         return self.render_template("sent.html", params=context)
 
 
+class WeatherHandler(BaseHandler):
+    def get(self):
+        context = self.get_common_context("main-url")
+
+        location = self.request.get("location")
+
+        if not location:
+            location = "Malaga,es"
+
+        context["weather"] = get_weather_info(location)
+
+        return self.render_template("weather.html", params=context)
+
+
 app = webapp2.WSGIApplication([
     webapp2.Route('/', MainHandler, name="main-url"),
     webapp2.Route('/new-message', NewMessageHandler, name="new-message-url"),
     webapp2.Route('/inbox', InboxHandler, name="inbox-url"),
     webapp2.Route('/sent', SentHandler, name="sent-url"),
+    webapp2.Route('/weather', WeatherHandler, name="weather-url"),
 ], debug=True)

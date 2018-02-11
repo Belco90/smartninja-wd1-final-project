@@ -6,7 +6,7 @@ body {
   padding-top: 50px;
 }
 
-.dropdown-menu-right {
+.navbar.fixed-top .dropdown-menu-right {
   right: 5px;
   left: auto;
 }
