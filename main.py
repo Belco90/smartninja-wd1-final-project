@@ -4,7 +4,7 @@ import jinja2
 import webapp2
 import json
 from google.appengine.api import urlfetch, users
-from models import Message, User
+from models import Message
 
 template_dir = os.path.join(os.path.dirname(__file__), "templates")
 jinja_env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir), autoescape=False)
@@ -64,12 +64,6 @@ class BaseHandler(webapp2.RequestHandler):
 class MainHandler(BaseHandler):
     def get(self):
         context = self.get_common_context()
-        current_user = context["user"]
-        if current_user:
-            user_db = User.get_by_user(current_user)
-            if not user_db:
-                new_user_db = User(user_id=current_user.user_id(), nickname=current_user.nickname())
-                new_user_db.put()
 
         return self.render_template("main.html", params=context)
 
@@ -77,7 +71,6 @@ class MainHandler(BaseHandler):
 class NewMessageHandler(BaseHandler):
     def get(self):
         context = self.get_common_context("main-url")
-        context["receivers"] = User.query().fetch()
 
         return self.render_template("new-message.html", params=context)
 
@@ -94,7 +87,7 @@ class NewMessageHandler(BaseHandler):
             new_message = Message(
                 subject=subject,
                 body=content,
-                sender=current_user.user_id(),
+                sender=current_user.email(),
                 receiver=to,
                 important=bool(important),
             )
@@ -104,7 +97,6 @@ class NewMessageHandler(BaseHandler):
 
         else:
             context["error_message"] = "Please fill all required inputs"
-            context["receivers"] = User.query().fetch()
             context["subject"] = subject
             context["to"] = to
             context["content"] = content
@@ -118,7 +110,7 @@ class InboxHandler(BaseHandler):
         context = self.get_common_context("main-url")
 
         current_user = context["user"]
-        context["messages"] = Message.query(Message.receiver == current_user.user_id()).fetch()
+        context["messages"] = Message.query(Message.receiver == current_user.email()).fetch()
 
         return self.render_template("inbox.html", params=context)
 
@@ -128,7 +120,7 @@ class SentHandler(BaseHandler):
         context = self.get_common_context("main-url")
 
         current_user = context["user"]
-        context["messages"] = Message.query(Message.sender == current_user.user_id()).fetch()
+        context["messages"] = Message.query(Message.sender == current_user.email()).fetch()
 
         return self.render_template("sent.html", params=context)
 

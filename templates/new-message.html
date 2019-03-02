@@ -29,12 +29,7 @@
 
       <div class="form-group col-md-3">
         <label for="inputTo">To</label> <span class="text-danger">*</span>
-        <select id="inputTo" name="to" class="form-control" required>
-          <option value="">Choose one user</option>
-          {% for receiver in receivers %}
-          <option value="{{ receiver.user_id }}" {% if to == receiver.user_id %}selected{% endif %}>{{ receiver.nickname }}</option>
-          {% endfor %}
-        </select>
+        <input type="text" name="to" value="{{ to }}" class="form-control" id="inputTo" placeholder="To">
         <div class="invalid-feedback">Please choose the user who will receive the message</div>
       </div>
     </div>
